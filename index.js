@@ -19,18 +19,35 @@ app.get('/jobkorea', async (req, res) => {
       }
     });
 
-    const decoded = iconv.decode(response.data, 'euc-kr');
-    console.log(decoded); // 👈 In XML ra logs
+    const decodedXML = iconv.decode(response.data, 'euc-kr');
 
+    // In log XML để debug nếu cần
+    console.log('===== XML RAW START =====');
+    console.log(decodedXML);
+    console.log('===== XML RAW END =====');
 
-    xml2js.parseString(decoded, { explicitArray: false }, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'XML parsing error' });
+    // Cấu hình phân tích an toàn hơn
+    const parser = new xml2js.Parser({
+      explicitArray: false,
+      trim: true,
+      normalize: true,
+      normalizeTags: true
+    });
+
+    parser.parseString(decodedXML, (err, result) => {
+      if (err || !result) {
+        console.error('❌ XML parsing error:', err);
+        return res.status(500).json({
+          error: 'XML parsing error',
+          raw: decodedXML.slice(0, 1000) // Gửi kèm XML bị lỗi (cắt gọn)
+        });
       }
 
       res.json(result);
     });
+
   } catch (err) {
+    console.error('❌ Request error:', err.message);
     res.status(500).json({ error: 'Failed to fetch data from JobKorea' });
   }
 });
