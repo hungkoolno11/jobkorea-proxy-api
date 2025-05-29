@@ -20,6 +20,8 @@ app.get('/jobkorea', async (req, res) => {
     });
 
     const decoded = iconv.decode(response.data, 'euc-kr');
+    console.log(decoded); // 👈 In XML ra logs
+
 
     xml2js.parseString(decoded, { explicitArray: false }, (err, result) => {
       if (err) {
