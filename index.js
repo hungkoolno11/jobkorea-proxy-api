@@ -34,17 +34,10 @@ app.get('/jobkorea', async (req, res) => {
       normalizeTags: true
     });
 
-    parser.parseString(decodedXML, (err, result) => {
-      if (err || !result) {
-        console.error('❌ XML parsing error:', err);
-        return res.status(500).json({
-          error: 'XML parsing error',
-          raw: decodedXML.slice(0, 1000) // Gửi kèm XML bị lỗi (cắt gọn)
-        });
-      }
+// Tạm thời trả lại XML thô để kiểm tra
+res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+res.send(decodedXML);
 
-      res.json(result);
-    });
 
   } catch (err) {
     console.error('❌ Request error:', err.message);
